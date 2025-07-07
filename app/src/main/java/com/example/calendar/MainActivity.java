@@ -1,8 +1,10 @@
 package com.example.calendar;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +20,7 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 
+import mmcalendar.Astro;
 import mmcalendar.CalendarType;
 import mmcalendar.Config;
 import mmcalendar.Language;
@@ -39,9 +42,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("NewApi")
     private void iniListner() {
         binding.btPrevious.setOnClickListener(v -> previousMonth());
         binding.btNext.setOnClickListener(v -> nextMonth());
+        binding.tvFirst.setOnClickListener(v -> {
+            DatePickerDialog datePickerDialog=new DatePickerDialog(this);
+            datePickerDialog.setOnDateSetListener((view, year, month, dayOfMonth) -> {
+                today=LocalDate.of(year,month+1,dayOfMonth);
+                updateCalenderHeader();
+                updateCalenderBody();
+
+            });
+            datePickerDialog.show();
+        });
     }
 
     @SuppressLint("NewApi")
@@ -67,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
                         .build());
 
         today=LocalDate.now();
-        binding.tvMiddle.setText(today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        binding.tvmiddle.setText(today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+
+
         updateCalenderHeader();
         updateCalenderBody();
     }
@@ -118,9 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         MyanmarDate myanmarDate=MyanmarDate.of(today);
+        Astro astro= Astro.of(myanmarDate);
+        binding.tvDayGood.setText(astro.getAstrologicalDay());
         binding.tvDay.setText(myanmarDate.getMoonPhase()+" "+myanmarDate.getFortnightDay()+"ရက်");
         binding.tvUnderDay.setText(myanmarDate.getWeekDay()+"နေ့");
         binding.tvDescription.setText(myanmarDate.format("S (s) k, B (y) k, M p (f) r, En"));
+
+
     }
 
 
@@ -131,5 +152,9 @@ public class MainActivity extends AppCompatActivity {
         updateCalenderHeader();
         updateCalenderBody();
 
+    }
+
+    @SuppressLint("NewApi")
+    public void todayCLick(View view) {
     }
 }
